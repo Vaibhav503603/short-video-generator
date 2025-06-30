@@ -5,10 +5,10 @@ function provider({children}) {
   return (
     <div>
         <NextThemesProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
         > 
          {children}
         </NextThemesProvider>
