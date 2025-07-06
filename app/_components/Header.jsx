@@ -4,6 +4,7 @@ import React from 'react'
 import { Button } from "@/components/ui/button" // adjust path as needed
 import Authentication from './Authentication'
 import { useAuthContext } from '../provider'
+import Link from "next/link"; // ✅ at top
 
 
 function header() {
@@ -29,9 +30,9 @@ function header() {
           </Authentication>
         ) : (
           <div className='flex items-center gap-3'>
-            <link href='/dashboard'>
+            <Link href='/dashboard'>
               <Button>Dashboard</Button>
-            </link>
+            </Link>
             <Image
               src={user?.photoURL} // ✅ Fixed typo from photoUrl to photoURL
               alt='userImage'

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono,Outfit } from "next/font/google";
 import "./globals.css";
 import Provider from "./provider";
+import ConvexClientProvider from "./ConvexClientProvider";
 
 
 
@@ -17,9 +18,9 @@ export default function RootLayout({ children }) {
       <body
       className={outfit.className}
       >
-        <Provider> 
+        <ConvexClientProvider> 
          {children}
-        </Provider>
+        </ConvexClientProvider>
         
       </body>
     </html>
