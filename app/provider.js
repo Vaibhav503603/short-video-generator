@@ -17,7 +17,7 @@ function provider({children}) {
   useEffect(() => {
     const unsubscribe=onAuthStateChanged(auth, async(user) => {
       console.log(user);
-      setUser(user);
+              setUser(user);
 
       const result = await createUser({
         name: user?.displayName,
@@ -25,6 +25,7 @@ function provider({children}) {
         pictureUrl: user?.photoURL
       });
       console.log(result);
+      setUser(result);
       
     })
     return () =>unsubscribe();
