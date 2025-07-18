@@ -10,10 +10,7 @@ function CreateNewVideo() {
       ...prev,
       [fieldName]: fieldValue,
     }));
-    console.log("Updated formData:", {
-      ...formData,
-      [fieldName]: fieldValue,
-    });
+    console.log(formData);
   };
 
   return (

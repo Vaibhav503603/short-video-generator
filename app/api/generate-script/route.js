@@ -1,37 +1,24 @@
 import { generateScript } from "@/configs/AiModel";
 import { NextResponse } from "next/server";
 
-const SCRIPT_PROMPT = `write two different scripts for a 30-second video on the Topic: {topic}.
-Do not add scene descriptions.
-Do not add anything in braces.
-Just return plain story text.
-Give the response in JSON format:
+const SCRIPT_PROMPT= `write a two different script for 30 second video on Topic:{topic},
+Do not add scene description
+do not add anything in Braces, just return the plain story in text 
+-give me response in JSON format and follow the script
+-{
+scripts:[
 {
-  "scripts": [
-    { "content": "..." },
-    { "content": "..." }
-  ]
-}`;
+content:"
+},
+],
+}`
 
 export async function POST(req) {
-  try {
-    const { topic } = await req.json();
-    const PROMPT = SCRIPT_PROMPT.replace("{topic}", topic);
+  const {topic} = await req.json();
 
-    const result = await generateScript(PROMPT);
+  const PROMPT = SCRIPT_PROMPT.replace("{topic}", topic);
+  const result=await generateScript.sendMessage(PROMPT);
+  const resp=result?.response?.text();
 
-    const rawText = result.response.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    console.log("✅ Gemini response text:", rawText);
-
-    const cleaned = rawText.replace(/```json|```/g, "").trim();
-    const json = JSON.parse(cleaned);
-
-    return NextResponse.json(json);
-  } catch (error) {
-    console.error("❌ API Error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error", details: error.message },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(JSON.parse(resp));
 }

@@ -1,14 +1,15 @@
-"use client";
-import { Textarea } from "@/components/ui/textarea";
+"use client"
+import { Button } from "@/components/ui/button";
+import React from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from '@nextui-org/react'
+import { Loader2Icon, SparklesIcon } from 'lucide-react'
+import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useState } from "react";
-import React from "react";
-import { Input } from "@nextui-org/react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { SparklesIcon } from "lucide-react";
 
-const suggestions = [
+
+const Suggestions=[
   "Historic Story",
   "Kids story",
   "Movie Stories",
@@ -20,80 +21,78 @@ const suggestions = [
   "True Crime Stories",
   "Fantasy Adventures",
   "Science Experiments",
-  "Motivational Stories",
-];
+  "Motivational Stories",]
+function Topic({onHandleInputChange}) {
+  const[selectedTopic, setSelectedTopic] = React.useState("suggestion");
+  const [scripts,setScripts] = useState();
+  const [loading, setLoading] = useState(false);
 
-function Topic({ onHandleInputChange }) {
-  const [selectedTopic, setSelectedTopic] = useState();
+  const GenerateScript= async ()=>{
+    setLoading(true);
+    try{
+    const result=await axios.post('/api/generate-script', {
+      topic: selectedTopic
+    });
+    console.log(result.data);
+    setScripts(result.data?.scripts);
+  }
+  catch(e) {
+    console.log(e);
+  }
+    setLoading(false);
 
-  const GenerateScript = async () => {
-    if (!selectedTopic) {
-      console.warn("⚠️ No topic selected.");
-      return;
-    }
-    try {
-      const result = await axios.post("/api/generate-script", {
-        topic: selectedTopic,
-      });
-      console.log("✅ Script Response:", result.data);
-    } catch (error) {
-      console.error("❌ Axios Error:", error?.response?.data || error.message);
-    }
-  };
-
+  }
+  
   return (
-    <div>
-      <h2 className="mb-1">Project Title</h2>
-      <Input
-        placeholder="Enter project title"
-        onChange={(e) => onHandleInputChange("title", e.target.value)}
-      />
-
-      <div className="mt-5">
+    <div >
+      <h2 className='mb-1'>Project Title</h2>
+      <Input placeholder="Enter Project Title" onChange={(event)=>onHandleInputChange('title',event?.target.value)}/>
+      <div className='mt-5'>
         <h2>Video Topic</h2>
-        <p className="text-sm text-gray-600">Select topic for your video</p>
-
+        <p className='text-sm text-gray-600'> select topic for your video</p>
+      
         <Tabs defaultValue="suggestion" className="w-full mt-2">
           <TabsList>
             <TabsTrigger value="suggestion">Suggestions</TabsTrigger>
             <TabsTrigger value="your_topic">Your Topic</TabsTrigger>
           </TabsList>
-
           <TabsContent value="suggestion">
-            <div>
-              {suggestions.map((suggestion, index) => (
-                <Button
-                  variant="outline"
-                  key={index}
-                  className={`m-1 ${selectedTopic === suggestion ? "bg-secondary" : ""}`}
-                  onClick={() => {
-                    setSelectedTopic(suggestion);
-                    onHandleInputChange("topic", suggestion);
-                  }}
-                >
-                  {suggestion}
-                </Button>
+            <div className=''>
+              {Suggestions.map((suggestion, index) => (
+                <Button  variant="outline" key={index} 
+                  className={`m-1 ${suggestion==selectedTopic&& 'bg-primary'}`} 
+                  onClick={()=> {setSelectedTopic(suggestion)
+                  onHandleInputChange("topic", suggestion)
+                  }}>{suggestion}</Button>
               ))}
             </div>
           </TabsContent>
-
           <TabsContent value="your_topic">
-            <Textarea
-              placeholder="Enter your topic"
-              onChange={(e) => {
-                setSelectedTopic(e.target.value);
-                onHandleInputChange("topic", e.target.value);
-              }}
-            />
+            <div>
+              <h2>Enter your own topic</h2>
+              <Textarea placeholder="Enter your topic"
+              onChange={(event)=>onHandleInputChange("topic", event.target.value)}
+              />
+            </div>
           </TabsContent>
         </Tabs>
-      </div>
 
-      <Button className="mt-3" size="sm" onClick={GenerateScript}>
-        <SparklesIcon className="mr-2" /> Generate Script
-      </Button>
+        {scripts?.length>0&&  <div className="grid grid-cols-2 gap-5">
+          {scripts?.map((item,index)=>(
+            <div key={index}>
+              <h2>{item.content}</h2>
+            </div>
+
+          ))}
+        </div>}
+
+      </div>
+      <Button className='mt-3' size ="sm" 
+        disabled={loading}
+        onClick={GenerateScript}> 
+        {loading?<Loader2Icon className="animate-spin" />: <SparklesIcon/>}Generate Script</Button>
     </div>
-  );
+  )
 }
 
-export default Topic;
+export default Topic
