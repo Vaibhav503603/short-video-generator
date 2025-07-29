@@ -7,6 +7,7 @@ import Voice from './_components/Voice';
 import { WandSparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Preview from './_components/Preview';
+import axios from 'axios';
 
 function CreateNewVideo() {
   const [formData, setFormData] = useState({}); // ✅ Initialize as an empty object
@@ -18,6 +19,18 @@ function CreateNewVideo() {
     }));
     console.log(formData);
   };
+
+  const GenerateVideo =  async() => {
+    if(!formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption||!formData?.script) 
+      {
+        console.log("ERROR","Enter All Field");
+      }
+      const result=await axios.post('/api/generate-video-data',{
+        ...formData
+      });
+
+      console.log(result);
+  }
 
   return (
     <div>
@@ -32,7 +45,9 @@ function CreateNewVideo() {
           <Voice onHandleInputChange={onHandleInputChange}/>
           {/* Captions */}
           <Captions onHandleInputChange={onHandleInputChange}/>
-          <Button className="w-full mt-5"><WandSparkles/>Generate Video</Button>
+          <Button className="w-full mt-5"
+          onClick={GenerateVideo}
+          ><WandSparkles/>Generate Video</Button>
         </div>
         <div>
           <Preview formData={formData} />
