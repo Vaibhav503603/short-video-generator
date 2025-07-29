@@ -9,7 +9,7 @@ import { ConvexProvider, ConvexReactClient, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api"; // Adjust path based on your folder structure
 
 
-function provider({children}) {
+ export function AuthProvider({children}) {
 
   const [user,setUser]=useState();
   const createUser=useMutation(api.users.createUser);
@@ -53,4 +53,4 @@ export const useAuthContext=() => {
   return context;
 }
 
-export default provider
+export default AuthProvider;

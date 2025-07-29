@@ -23,12 +23,14 @@ const Suggestions=[
   "Science Experiments",
   "Motivational Stories",]
 function Topic({onHandleInputChange}) {
-  const[selectedTopic, setSelectedTopic] = React.useState("suggestion");
+  const [selectedTopic, setSelectedTopic] = useState();
+  const [selectedScriptIndex, setSelectedScriptIndex] = useState();
   const [scripts,setScripts] = useState();
   const [loading, setLoading] = useState(false);
 
   const GenerateScript= async ()=>{
     setLoading(true);
+    setSelectedScriptIndex(null);
     try{
     const result=await axios.post('/api/generate-script', {
       topic: selectedTopic
@@ -60,7 +62,7 @@ function Topic({onHandleInputChange}) {
             <div className=''>
               {Suggestions.map((suggestion, index) => (
                 <Button  variant="outline" key={index} 
-                  className={`m-1 ${suggestion==selectedTopic&& 'bg-primary'}`} 
+                className={`m-1 cursor-pointer ${suggestion === selectedTopic && 'bg-secondary'}`}  
                   onClick={()=> {setSelectedTopic(suggestion)
                   onHandleInputChange("topic", suggestion)
                   }}>{suggestion}</Button>
@@ -77,20 +79,30 @@ function Topic({onHandleInputChange}) {
           </TabsContent>
         </Tabs>
 
-        {scripts?.length>0&&  <div className="grid grid-cols-2 gap-5">
-          {scripts?.map((item,index)=>(
-            <div key={index}>
-              <h2>{item.content}</h2>
-            </div>
+        {scripts?.length>0&& 
+        <div className="mt-3" >
+          <h2>Select the script</h2>
+          <div className="grid grid-cols-2 gap-5 mt-1">
+            {scripts?.map((item,index)=>(
+              <div key={index} 
+                  className= {`p-3 border rounded-lg cursor-pointer
+              ${selectedScriptIndex==index && 'border-white bg-secondary'}
+              `}
+                  onClick={()=> setSelectedScriptIndex(index)}
+              >
+                  <h2 className="line-clamp-4 text-sm text-gray-300" >{item.content}</h2>
+              </div>
 
-          ))}
-        </div>}
+            ))}
+          </div>
+        </div>
+        }
 
       </div>
-      <Button className='mt-3' size ="sm" 
+      {!scripts&&  <Button className='mt-3 cursor-pointer' size ="sm" 
         disabled={loading}
         onClick={GenerateScript}> 
-        {loading?<Loader2Icon className="animate-spin" />: <SparklesIcon/>}Generate Script</Button>
+        {loading?<Loader2Icon className="animate-spin" />: <SparklesIcon/>}Generate Script</Button>}
     </div>
   )
 }

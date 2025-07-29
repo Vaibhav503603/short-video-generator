@@ -1,14 +1,14 @@
 import React from 'react'
-import DashboardProvider from './provider'
+import AuthProvider from './provider'
 
-function DashboardLayout({children}) {
+function AuthLayout({ children }) {
   return (
     <div>
-        <DashboardProvider>
-            {children}
-        </DashboardProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
     </div>
   )
 }
 
-export default DashboardLayout
+export default AuthLayout
