@@ -24,6 +24,7 @@ function CreateNewVideo() {
     if(!formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption||!formData?.script) 
       {
         console.log("ERROR","Enter All Field");
+        return;
       }
       const result=await axios.post('/api/generate-video-data',{
         ...formData
