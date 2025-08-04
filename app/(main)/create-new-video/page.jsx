@@ -8,29 +8,49 @@ import { WandSparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Preview from './_components/Preview';
 import axios from 'axios';
+import { useMutation } from 'convex/react';
+import { api } from "@/convex/_generated/api";
+import { useAuthContext } from '@/app/provider';
 
 function CreateNewVideo() {
-  const [formData, setFormData] = useState({}); // ✅ Initialize as an empty object
 
+  const [formData, setFormData] = useState({}); // ✅ Initialize as an empty object
+  const CreateInitialVideoRecord=useMutation(api.videoData.CreateVideoData);
+  const {user} = useAuthContext();
   const onHandleInputChange = (fieldName, fieldValue) => {
     setFormData(prev => ({
       ...prev,
       [fieldName]: fieldValue,
-    }));
+    }))
     console.log(formData);
   };
 
   const GenerateVideo =  async() => {
-    if(!formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption||!formData?.script) 
+    console.log(formData)
+    if(!formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption|| !formData?.script) 
       {
         console.log("ERROR","Enter All Field");
         return;
       }
-      const result=await axios.post('/api/generate-video-data',{
-        ...formData
-      });
 
-      console.log(result);
+      // Save video Data First
+      const resp=await CreateInitialVideoRecord({
+        title: formData.title,
+        topic: formData.topic,
+        script: formData.script,
+        videoStyle: formData.videoStyle,
+        captions: formData.caption,
+        voice: formData.voice,
+        uid: user?._id, 
+        createdBy: user?.email, 
+      });
+      console.log(resp);
+
+      //  const result=await axios.post('/api/generate-video-data',{
+      //    ...formData
+      //  });
+
+      //console.log(result);
   }
 
   return (
