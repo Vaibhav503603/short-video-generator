@@ -11,12 +11,14 @@ import axios from 'axios';
 import { useMutation } from 'convex/react';
 import { api } from "@/convex/_generated/api";
 import { useAuthContext } from '@/app/provider';
+import { Loader2Icon } from 'lucide-react';
 
 function CreateNewVideo() {
 
   const [formData, setFormData] = useState({}); // ✅ Initialize as an empty object
   const CreateInitialVideoRecord=useMutation(api.videoData.CreateVideoData);
   const {user} = useAuthContext();
+  const [loading, setLoading] = useState(false);
   const onHandleInputChange = (fieldName, fieldValue) => {
     setFormData(prev => ({
       ...prev,
@@ -32,6 +34,7 @@ function CreateNewVideo() {
         console.log("ERROR","Enter All Field");
         return;
       }
+      setLoading(true);
 
       // Save video Data First
       const resp=await CreateInitialVideoRecord({
@@ -46,11 +49,12 @@ function CreateNewVideo() {
       });
       console.log(resp);
 
-      //  const result=await axios.post('/api/generate-video-data',{
-      //    ...formData
-      //  });
+      const result=await axios.post('/api/generate-video-data',{
+        ...formData
+      });
 
-      //console.log(result);
+      console.log(result);
+      setLoading(false);
   }
 
   return (
@@ -67,8 +71,9 @@ function CreateNewVideo() {
           {/* Captions */}
           <Captions onHandleInputChange={onHandleInputChange}/>
           <Button className="w-full mt-5"
-          onClick={GenerateVideo}
-          ><WandSparkles/>Generate Video</Button>
+            disabled={loading}
+            onClick={GenerateVideo}
+          >{loading?<Loader2Icon className='animate-spin' />: <WandSparkles/>} Generate Video</Button>
         </div>
         <div>
           <Preview formData={formData} />

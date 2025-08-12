@@ -11,9 +11,9 @@ function AppHeader() {
     <div className='p-3 flex justify-between items-center'>
       <SidebarTrigger />
 
-      {user?.pictureUrl ? (
+      {user?.photoURL ? (
         <Image
-          src={user.pictureUrl}
+          src={user.photoURL}
           alt='user'
           width={40}
           height={40}

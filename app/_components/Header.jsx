@@ -10,7 +10,7 @@ function Header() {
   const { user } = useAuthContext()
 
   console.log("User object:", user)
-  console.log("User picture URL:", user?.pictureUrl)
+  console.log("User picture URL:", user?.photoURL)
 
   return (
     <div className="p-4 flex items-center justify-between">
@@ -36,9 +36,9 @@ function Header() {
             <Link href="/dashboard">
               <Button>Dashboard</Button>
             </Link>
-            {user?.pictureUrl && (
+            {user?.photoURL && (
               <Image
-                src={user.pictureUrl}
+                src={user.photoURL}
                 alt="user avatar"
                 width={40}
                 height={40}

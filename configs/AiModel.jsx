@@ -66,6 +66,35 @@ const generationConfig = {
     ],  
   });
 
+  export const GenerateImageScript= model.startChat({
+    generationConfig,
+    history: [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: `Generate Image prompt of cinematic style with all details for each scene for 30 seconds video : script: Rosa Parks refused to give up her seat on a bus in 1995, Her quiet act of defiance sparked the Montgomery Bus Boycott, a pivotal moment in the Civil Rights Movement. One person's bravery can inspire lasting chamge for everyone.
+            -Just Give specfing image prompt depends on the story line
+            -do not give camera angle image prompt
+            -follow the following schema and return JSON data (Max 4-5 Images)
+            - [
+              {
+                imagePrompt:'',
+                sceneContent: '<Script Content>'
+              }
+            ]`, 
+          },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {text: "'''json\n{\n \"scripts\": [\n  {\n   \"content\": \"Rosa Parks refused to give up her seat on a bus in 1995, Her quiet act of defiance sparked the Montgomery Bus Boycott, a pivotal moment in the Civil Rights Movement. One person's bravery can inspire lasting change for everyone.\"\n  }\n ]\n}\n'''"},
+        ], 
+      },
+      
+    ],
+  });  
 
 
 
