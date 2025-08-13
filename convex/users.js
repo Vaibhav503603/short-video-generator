@@ -2,33 +2,32 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
-export const createUser = mutation({
+export const CreateNewVideo = mutation({
   args: {
     name: v.string(),
     email: v.string(),
-    pictureUrl: v.string(),
+    pictureURL: v.string(),
   },
   handler: async (ctx, args) => {
     // First check if user exists
-    const existingUser = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .first();
+    const user = await ctx.db.query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .collect();
 
-    if (existingUser) {
-      return existingUser;
+    if (!user[0]?.email) {
+      const newUser = {
+        name: args?.name,
+        email: args?.email,
+        pictureURL: args?.pictureURL,
+        credits: 3 // Initial credits
     }
 
-    // Create new user if doesn't exist
-    const newUser = {
-      name: args.name,
-      email: args.email,
-      pictureUrl: args.pictureUrl,
-      credits: 3, // Initial credits
-      createdAt: Date.now(), // Add creation timestamp
-    };
+    const result = await ctx.db.insert("users", userData);
 
-    const userId = await ctx.db.insert("users", newUser);
-    return { ...newUser, _id: userId }; // Return complete user data with ID
+    return userData
+    }
+    return user[0];
+
   },
-});
+})
+

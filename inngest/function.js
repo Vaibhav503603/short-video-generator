@@ -1,7 +1,10 @@
 import { inngest } from "./client";
 import axios from "axios";
 import { createClient } from "@deepgram/sdk";
-import { GenerateImageScript } from "./functions/GenerateImageScript";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
+import { GenerateImageScript } from "@/configs/AiModel";
+
 
 const ImagePromptScript = `Generate Image prompt of {style} style all details for each scene for 30 seconds video : script: {script} 
 -Just Give specfing image prompt depends on the story line
@@ -29,7 +32,8 @@ export const GenerateVideoData=inngest.createFunction(
   { event: "generate-video-data" },
   async ({ event, step }) => {
     
-    const { topic, script, title, videoStyle, voice, captions } = event?.data;
+    const { topic, script, title, videoStyle, voice, captions, recordId } = event?.data;
+    const convex=new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
     // Generate Audio File MP3
     const GenerateAudioFile=await step.run(
       "Generate Audio File",
@@ -84,9 +88,52 @@ export const GenerateVideoData=inngest.createFunction(
     )    
     // Generate Images using ai
     
+    const GenerateImages=await step.run(
+      "Generate Images",
+      async () => {
+        let images = [];
+        images=await Promise.all(
+          GenerateImagePrompt.map(async (element) => {
+            const result = await axios.post(BASE_URL+'/api/generate-image',
+              {
+                  width: 1024,
+                  height: 1024,
+                  input: element?.imagePrompt,
+                  model: 'sdxl',//'flux'
+                  aspectRatio:"1:1"//Applicable to Flux model only
+              },
+              {
+                  headers: {
+                      'x-api-key': process.env.NEXT_PUBLIC_AIGURULAB_API_KEY, // Your API Key
+                      'Content-Type': 'application/json', // Content Type
+                  },
+              })
+            console.log(result.data.image) //Output Result: Base 64 Image
+               return result.data.image; 
+          })
+        )
+        return images;
+
+      }
+    );   
+
     // Save all data to database
+
+    const UpdateDB =await step.run(
+      "Update DB",
+      async () => {
+        const result = await convex.mutations(api.videoData.UpdateVideoRecord,{
+          recordId: recordId,
+          audioUrl: GenerateAudioFile,
+          images: GenerateImages,
+          captionJson: GenerateCaptions
+        });
+
+        return result;
+      }
+    );  
     
-    return GenerateAudioFile
+    return 'executed successfully!';
 
   },
 );
