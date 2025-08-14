@@ -122,7 +122,7 @@ export const GenerateVideoData=inngest.createFunction(
     const UpdateDB =await step.run(
       "Update DB",
       async () => {
-        const result = await convex.mutations(api.videoData.UpdateVideoRecord,{
+        const result = await convex.mutation(api.videoData.UpdateVideoRecord,{
           recordId: recordId,
           audioUrl: GenerateAudioFile,
           images: GenerateImages,
