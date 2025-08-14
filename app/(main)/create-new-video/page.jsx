@@ -12,6 +12,8 @@ import { useMutation } from 'convex/react';
 import { api } from "@/convex/_generated/api";
 import { useAuthContext } from '@/app/provider';
 import { Loader2Icon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 
 function CreateNewVideo() {
 
@@ -19,23 +21,30 @@ function CreateNewVideo() {
   const CreateInitialVideoRecord=useMutation(api.videoData.CreateVideoData);
   const {user} = useAuthContext();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const onHandleInputChange = (fieldName, fieldValue) => {
     setFormData(prev => ({
       ...prev,
-      [fieldName]: fieldValue,
+      [fieldName]: fieldValue
     }))
     console.log(formData);
   };
 
   const GenerateVideo =  async() => {
+
+    if(user?.credits <= 0) {
+      toast("Please add more credits!")
+      return;
+    }
+
     console.log(formData)
     if(!formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption|| !formData?.script) 
       {
         console.log("ERROR","Enter All Field");
+        toast("Please fill out all details")
         return;
       }
       setLoading(true);
-
       // Save video Data First
       const resp=await CreateInitialVideoRecord({
         title: formData.title,

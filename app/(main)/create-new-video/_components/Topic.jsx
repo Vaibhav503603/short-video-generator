@@ -7,6 +7,7 @@ import { Loader2Icon, SparklesIcon } from 'lucide-react'
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useState } from "react";
+import { useAuthContext } from "@/app/provider";
 
 
 const Suggestions=[
@@ -27,10 +28,18 @@ function Topic({onHandleInputChange}) {
   const [selectedScriptIndex, setSelectedScriptIndex] = useState();
   const [scripts,setScripts] = useState();
   const [loading, setLoading] = useState(false);
+  const { user } = useAuthContext();
 
   const GenerateScript= async ()=>{
+
+    if(user?.credits <= 0) {
+      toast("Please add more credits!")
+      return;
+    }
+
     setLoading(true);
     setSelectedScriptIndex(null);
+    console.log(selectedTopic)
     try{
     const result=await axios.post('/api/generate-script', {
       topic: selectedTopic
