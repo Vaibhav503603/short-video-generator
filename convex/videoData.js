@@ -1,7 +1,7 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-export const CreateVideoData=mutation({
+export const CreateVideoData = mutation({
     args: {
         title: v.string(),
         topic: v.string(),
@@ -13,8 +13,8 @@ export const CreateVideoData=mutation({
         createdBy: v.string(),
         credits: v.number()
     },
-    handler:async (ctx, args) => {
-        const result = await ctx.db.insert("videoData", {
+    handler: async (ctx, args) => {
+        const insertedId = await ctx.db.insert("videoData", {
             title: args.title,
             topic: args.topic,
             script: args.script,
@@ -26,22 +26,22 @@ export const CreateVideoData=mutation({
             status: "pending"
         });
 
-        await ctx.db.patch(Average.uid, {
-            credits: (args?.credits)-1
-        })
+        await ctx.db.patch(args.uid, {
+            credits: args.credits - 1
+        });
 
-        return result;
+        return insertedId;
     }
-}) 
+});
 
-export const UpdateVideoRecord=mutation({
+export const UpdateVideoRecord = mutation({
     args: {
         recordId: v.id('videoData'),
         audioUrl: v.string(),
-        images: v.string(),
-        captionJson: v.string(),
+        images: v.any(),
+        captionJson: v.any(),
     },
-    handler:async (ctx, args) => {
+    handler: async (ctx, args) => {
         const result = await ctx.db.patch(args.recordId, {
             audioUrl: args.audioUrl,
             images: args.images,
@@ -50,24 +50,23 @@ export const UpdateVideoRecord=mutation({
         });
         return result;
     }
+});
 
-})
-
-export const GetVideoData=query({
+export const GetUserVideos = query({
     args: {
         uid: v.id('users'),
     },
     handler: async (ctx, args) => {
         const result = await ctx.db.query("videoData")
-            filter(q=>(q.field("uid").args.uid))
-            .order('desc')
+            .withIndex("by_uid", (q) => q.eq("uid", args.uid))
+            .order("desc")
             .collect();
 
         return result;
     }
-})  
+});
 
-export const GetVideoById=query({
+export const GetVideoById = query({
     args: {
         videoId: v.id('videoData')
     },
@@ -75,4 +74,4 @@ export const GetVideoById=query({
         const result = await ctx.db.get(args.videoId);
         return result;
     }
-})
+});
