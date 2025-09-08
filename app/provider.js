@@ -1,11 +1,8 @@
 "use client"
-import React, { use, useEffect } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { ThemeProvider as NextThemesProvider } from "next-themes"
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from "@/configs/firebaseConfig"; // Adjust the import path as necessary
 import { AuthContext } from './_context/AuthContext';
-import { useState, useContext } from 'react';
-import { ConvexProvider, ConvexReactClient, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api"; // Adjust path based on your folder structure
 
 
@@ -15,20 +12,26 @@ import { api } from "../convex/_generated/api"; // Adjust path based on your fol
   const createUser=useMutation(api.users.createUser);
 
   useEffect(() => {
-    const unsubscribe=onAuthStateChanged(auth, async(user) => {
-      console.log(user);
-              setUser(user);
+    let unsubscribe;
+    (async () => {
+      const { onAuthStateChanged } = await import('firebase/auth');
+      const { auth } = await import("@/configs/firebaseConfig");
+      unsubscribe=onAuthStateChanged(auth, async(currentUser) => {
+        console.log(currentUser);
+        setUser(currentUser);
 
-      const result = await createUser({
-        name: user?.displayName,
-        email: user?.email,
-        pictureUrl: user?.photoURL
+        if (currentUser?.email) {
+          const result = await createUser({
+            name: currentUser.displayName || '',
+            email: currentUser.email,
+            pictureUrl: currentUser.photoURL || ''
+          });
+          console.log(result);
+          setUser(result);
+        }
       });
-      console.log(result);
-      setUser(result);
-      
-    })
-    return () =>unsubscribe();
+    })();
+    return () => unsubscribe && unsubscribe();
   }, [])
 
 

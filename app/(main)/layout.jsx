@@ -1,12 +1,12 @@
 import React from 'react'
-import AuthProvider from './provider'
+import DashboardProvider from './provider'
 
 function AuthLayout({ children }) {
   return (
     <div>
-      <AuthProvider>
+      <DashboardProvider>
         {children}
-      </AuthProvider>
+      </DashboardProvider>
     </div>
   )
 }

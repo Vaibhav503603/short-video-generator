@@ -1,6 +1,7 @@
+"use client"
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import {getAuth} from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -9,15 +10,16 @@ import {getAuth} from "firebase/auth";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: "short-video-generator-143fb.firebaseapp.com",
-  projectId: "short-video-generator-143fb",
-  storageBucket: "short-video-generator-143fb.firebasestorage.app",
-  messagingSenderId: "679947576934",
-  appId: "1:679947576934:web:5feed7fd9fce57efc16fa7",
-  measurementId: "G-FK9V5R0Y2W"
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "short-video-generator-143fb.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "short-video-generator-143fb",
+  // storageBucket must end with ".appspot.com" for the project
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "short-video-generator-143fb.appspot.com",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "679947576934",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:679947576934:web:5feed7fd9fce57efc16fa7",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-FK9V5R0Y2W"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth=getAuth(app);
+// Initialize Firebase (client only)
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 

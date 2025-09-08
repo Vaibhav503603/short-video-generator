@@ -17,6 +17,7 @@ function AppHeader() {
           alt='user'
           width={40}
           height={40}
+          priority
           className='rounded-full object-cover'
         />
       ) : (

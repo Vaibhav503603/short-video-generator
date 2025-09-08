@@ -2,18 +2,19 @@
 import { useAuthContext } from '@/app/provider'
 import { useRouter } from 'next/navigation'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import { Sidebar } from 'lucide-react'
-import React, { use } from 'react'
+import React, { useEffect } from 'react'
 import AppSidebar from './_components/AppSidebar'
 import AppHeader from './_components/AppHeader'
-import { useEffect } from 'react'
 
 function DashboardProvider({children}) {
 
   const { user } = useAuthContext();
   const router = useRouter();
+  
   useEffect(() => {
-    user && CheckedUserAuthenticated();
+    if (user) {
+      CheckedUserAuthenticated();
+    }
   }, [user]);
 
   const CheckedUserAuthenticated = () => {
@@ -28,7 +29,7 @@ function DashboardProvider({children}) {
       <div className='w-full'>
         <AppHeader />
         <div className='p-10'>
-        {children}
+          {children}
         </div>
       </div>
     </SidebarProvider>

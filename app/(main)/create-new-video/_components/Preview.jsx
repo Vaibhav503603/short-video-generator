@@ -16,6 +16,7 @@ function Preview({ formData }) {
                     alt={selectVideoStyle.name || "Preview"}
                     width={1000}
                     height={300}
+                    priority
                     className='w-full h-[70vh] object-cover rounded-xl'
                 />
             )}

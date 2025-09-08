@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useState } from "react";
 import { useAuthContext } from "@/app/provider";
+import { toast } from "sonner";
 
 
 const Suggestions=[

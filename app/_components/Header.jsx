@@ -21,6 +21,7 @@ function Header() {
           alt="logo"
           width={40}
           height={40}
+          priority
         />
         <h2 className="text-2xl font-bold">Video Gen</h2>
       </div>
@@ -42,6 +43,7 @@ function Header() {
                 alt="user avatar"
                 width={40}
                 height={40}
+                priority
                 className="rounded-full object-cover"
               />
             )}

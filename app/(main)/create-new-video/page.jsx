@@ -13,6 +13,7 @@ import { api } from "@/convex/_generated/api";
 import { useAuthContext } from '@/app/provider';
 import { Loader2Icon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from "sonner";
 
 
 function CreateNewVideo() {
@@ -38,7 +39,7 @@ function CreateNewVideo() {
     }
 
     console.log(formData)
-    if(!formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption|| !formData?.script) 
+    if(!formData?.title || !formData?.topic || !formData?.videoStyle || !formData?.voice || !formData?.caption|| !formData?.script) 
       {
         console.log("ERROR","Enter All Field");
         toast("Please fill out all details")
@@ -46,6 +47,7 @@ function CreateNewVideo() {
       }
       setLoading(true);
       // Save video Data First
+      console.log("Form data being sent to Convex:", formData);
       const resp=await CreateInitialVideoRecord({
         title: formData.title,
         topic: formData.topic,

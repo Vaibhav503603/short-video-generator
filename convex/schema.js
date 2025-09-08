@@ -6,7 +6,7 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
     email: v.string(),
-    pictureU: v.string(),
+    pictureUrl: v.string(),
     credits: v.number(),
   }).index("by_email", ["email"]),
 
@@ -22,8 +22,8 @@ export default defineSchema({
     captionJson: v.optional(v.any()),
     uid: v.id('users'),
     createdBy: v.string(),
-    status:v.optional(v.string())
+    status: v.optional(v.string())
 
-  })
+  }).index("by_uid", ["uid"])
 
 });

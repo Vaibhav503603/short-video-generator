@@ -19,10 +19,13 @@ function VideoList() {
     const { user } = useAuthContext();  
 
     useEffect(() => {
-        user && GetUserVideoList();
-    }, [user]);
+        if (user?._id) {
+            GetUserVideoList();
+        }
+    }, [user?._id]);
 
     const GetUserVideoList = async() =>{
+        if (!user?._id) return;
         //All user videos
         const result = await convex.query(api.videoData.GetUserVideos,{
             uid: user?._id
@@ -30,6 +33,7 @@ function VideoList() {
         setVideoList(result);
         const isPendingVideo = result?.find((item)=> item.status == "pending");
         isPendingVideo && GetPendingVideoStatus(isPendingVideo);
+        setLoading(false);
     }
 
     const GetPendingVideoStatus=(pendingVideo)=> {
@@ -66,14 +70,15 @@ function VideoList() {
                 {videoList.map((video, index) => (
                     <Link key={index} href={'/play-video/'+video?._id} >
                     <div className='relative'>
-                        {video?.status=='completed'? <Image drc={video?.images[0]}
+                        {video?.status=='completed'? <Image src={video?.images?.[0] || '/logo.svg'}
                             alt={video?.title} 
                             width={500}
                             height={500}
+                            priority={index===0}
                             className='w-full object-cover rounded-xl
                             aspect-[2/3]'
                         />:
-                        <div className='aspect-[2/3 p-5 w-full rounded-xl bg-slate-900
+                        <div className='aspect-[2/3] p-5 w-full rounded-xl bg-slate-900
                         flex items-center justify-center gap-2'>
                             <RefreshCcw className='animate-spin'/>
                             <h2>Generating...</h2>

@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import RemotionPlayer from '../_components/RemotionPlayer'
 import VideoInfo from '../_components/VideoInfo'
 import { useConvex } from 'convex/react'
@@ -12,15 +12,15 @@ function PlayVideo() {
 
   const {videoId}=useParams();
   const convex=useConvex();
-  const [videodata,setVideoData]=useState();
+  const [videoData,setVideoData]=useState();
 
   useEffect(()=>{
     videoId && GetVideoDataById();
   },[videoId])
 
   const GetVideoDataById=async()=>{
-    const result=await convex.query(api.videoData.GetVideoDataById,{
-      videoId:videoId
+    const result=await convex.query(api.videoData.GetVideoById,{
+      videoId: videoId
     });
     console.log(result);
     setVideoData(result);

@@ -1,23 +1,55 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { auth } from "@/configs/firebaseConfig";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // ✅ import this
+import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from "firebase/auth"; // ✅ import this
 
 
 function Authentication({ children }) {
   const provider = new GoogleAuthProvider();
 
-  const onSignInClick = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        const user = result.user;
-        console.log("Signed in user:", user);
-      })
-      .catch((error) => {
-        console.error("Sign-in error:", error);
+  useEffect(() => {
+    // Handle redirect result if popup was blocked
+    (async () => {
+      try {
+        const res = await getRedirectResult(auth);
+        if (res?.user) {
+          console.log("[Firebase] Redirect sign-in user:", {
+            uid: res.user.uid,
+            email: res.user.email,
+            projectId: auth.app?.options?.projectId,
+          });
+        }
+      } catch (e) {
+        console.warn("[Firebase] getRedirectResult error", e);
+      }
+    })();
+  }, []);
+
+  const onSignInClick = async () => {
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("[Firebase] Popup sign-in user:", {
+        uid: user.uid,
+        email: user.email,
+        projectId: auth.app?.options?.projectId,
       });
+    } catch (error) {
+      console.error("[Firebase] Popup sign-in error:", error?.code || error);
+      // Fallback to redirect for popup blockers or similar issues
+      if (
+        error?.code === "auth/popup-blocked" ||
+        error?.code === "auth/cancelled-popup-request" ||
+        error?.code === "auth/popup-closed-by-user"
+      ) {
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (err) {
+          console.error("[Firebase] Redirect sign-in error:", err?.code || err);
+        }
+      }
+    }
   };
 
   return (
